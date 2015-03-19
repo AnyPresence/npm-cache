@@ -73,6 +73,7 @@ var installDependencies = function (opts) {
             var managerConfig = require(availableManagers[managerName]);
             managerConfig.cacheDirectory = opts.cacheDirectory;
             managerConfig.forceRefresh = opts.forceRefresh;
+            managerConfig.onlyDep = opts.onlyDep;
             var manager = new CacheDependencyManager(managerConfig);
             callback(null, manager);
           },
@@ -133,6 +134,11 @@ parser.command('install')
     flag: true,
     default: false,
     help: 'force installing dependencies from package manager without cache'
+  })
+  .option('onlyDep', {
+    flag: true,
+    default: false,
+    help: 'only install dependencies'
   })
   .help('install specified dependencies');
 

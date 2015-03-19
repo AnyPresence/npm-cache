@@ -25,15 +25,41 @@ CacheDependencyManager.prototype.cacheLogError = function (error) {
 };
 
 
-CacheDependencyManager.prototype.installDependencies = function () {
+CacheDependencyManager.prototype.installDependencies = function (configPath) {
   var error = null;
+
+  var packageFile = fs.readFileSync(configPath);
+  var packageParsed = JSON.parse(packageFile);
+  var dep = packageParsed.dependencies;
+
   this.cacheLogInfo('installing ' + this.config.cliName + ' dependencies...');
-  if (shell.exec(this.config.installCommand).code !== 0) {
-    error = 'error running ' + this.config.installCommand;
-    this.cacheLogError(error);
+
+  if (configPath == null) {
+      if (shell.exec(this.config.installCommand).code !== 0) {
+        error = 'error running ' + this.config.installCommand;
+        this.cacheLogError(error);
+      } else {
+        this.cacheLogInfo('installed ');
+      }
   } else {
-    this.cacheLogInfo('installed ' + this.config.cliName + ' dependencies, now archiving');
+    for (var name in dep) {
+      
+
+      var version = dep[name];
+      var fullCommand = this.config.installCommand + " " + name
+      if (version) {
+         fullCommand = fullCommand  + "@" + "\"" + dep[name] + "\""
+      } 
+
+      if (shell.exec(fullCommand).code !== 0) {
+        error = 'error running ' + fullCommand;
+        this.cacheLogError(error);
+      } else {
+        this.cacheLogInfo('installed ' + name + '@' + version);
+      }
+    }
   }
+
   return error;
 };
 
@@ -81,7 +107,11 @@ CacheDependencyManager.prototype.loadDependencies = function (callback) {
       callback(error);
       return;
     }
-    error = this.installDependencies();
+    if (this.config.onlyDep) {
+      error = this.installDependencies(this.config.configPath);
+    } else {
+      error = this.installDependencies(null);
+    }
     if (error !== null) {
       callback(error);
       return;
