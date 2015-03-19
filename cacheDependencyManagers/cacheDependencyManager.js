@@ -28,13 +28,9 @@ CacheDependencyManager.prototype.cacheLogError = function (error) {
 CacheDependencyManager.prototype.installDependencies = function (configPath) {
   var error = null;
 
-  var packageFile = fs.readFileSync(configPath);
-  var packageParsed = JSON.parse(packageFile);
-  var dep = packageParsed.dependencies;
-
   this.cacheLogInfo('installing ' + this.config.cliName + ' dependencies...');
 
-  if (configPath == null) {
+  if (!configPath) {
       if (shell.exec(this.config.installCommand).code !== 0) {
         error = 'error running ' + this.config.installCommand;
         this.cacheLogError(error);
@@ -42,6 +38,10 @@ CacheDependencyManager.prototype.installDependencies = function (configPath) {
         this.cacheLogInfo('installed ');
       }
   } else {
+    var packageFile = fs.readFileSync(configPath);
+    var packageParsed = JSON.parse(packageFile);
+    var dep = packageParsed.dependencies;
+
     for (var name in dep) {
       
 
