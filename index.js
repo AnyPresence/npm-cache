@@ -172,6 +172,7 @@ var examples = [
   '\tnpm-cache install bower npm\t# install bower and npm components',
   '\tnpm-cache install bower --cacheDirectory /home/cache/\t# install components using /home/cache as cache directory',
   '\tnpm-cache install bower --forceRefresh\t# force installing dependencies from package manager without cache',
+  '\tnpm-cache install npm --onlyDep\t# force installing dependencies ONLY from dependency section from package manager without cache',
   '\tnpm-cache clean\t# cleans out all cached files in cache directory'
 ];
 
