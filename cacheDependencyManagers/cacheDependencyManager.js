@@ -35,29 +35,11 @@ CacheDependencyManager.prototype.installDependencies = function (configPath) {
         error = 'error running ' + this.config.installCommand;
         this.cacheLogError(error);
       } else {
-        this.cacheLogInfo('installed ');
+        this.cacheLogInfo('installed ' + this.config.cliName + ' dependencies, now archiving');
       }
   } else {
-    var packageFile = fs.readFileSync(configPath);
-    var packageParsed = JSON.parse(packageFile);
-    var dep = packageParsed.dependencies;
-
-    for (var name in dep) {
-      
-
-      var version = dep[name];
-      var fullCommand = this.config.installCommand + " " + name
-      if (version) {
-         fullCommand = fullCommand  + "@" + "\"" + dep[name] + "\""
-      } 
-
-      if (shell.exec(fullCommand).code !== 0) {
-        error = 'error running ' + fullCommand;
-        this.cacheLogError(error);
-      } else {
-        this.cacheLogInfo('installed ' + name + '@' + version);
-      }
-    }
+    // Install each dep under the 'dependencies' scope
+    error = this.config.installScope(configPath, 'dependencies')
   }
 
   return error;
