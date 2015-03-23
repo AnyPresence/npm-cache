@@ -12,8 +12,12 @@ function CacheDependencyManager (config) {
 }
 
 var getFileHash = function (filePath) {
-  var file = fs.readFileSync(filePath);
-  return md5(file);
+  var pkg = require(filePath);
+  var deps = pkg.dependencies || '';
+  var devDeps = pkg.devDependencies || '';
+
+  pkg = JSON.stringify(deps) + JSON.stringify(devDeps);
+  return md5(pkg);
 };
 
 CacheDependencyManager.prototype.cacheLogInfo = function (message) {
